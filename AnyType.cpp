@@ -3,179 +3,91 @@
 
 AnyType::AnyType()
 {
-    type = DataType::NONE;
+    type = NONE;
 }
 
-AnyType::AnyType(bool data)
+AnyType::AnyType(AnyType &other)
 {
-    singleValue.boolType = data;
-    type = DataType::BOOL;
-}
-
-AnyType::AnyType(char data)
-{
-    singleValue.charType = data;
-    type = DataType::CHAR;
-}
-
-AnyType::AnyType(int data)
-{
-    singleValue.intType = data;
-    type = DataType::INT;
-}
-
-AnyType::AnyType(float data)
-{
-    singleValue.floatType = data;
-    type = DataType::FLOAT;
-}
-
-AnyType::AnyType(double data)
-{
-    singleValue.doubleType = data;
-    type = DataType::DOUBLE;
-}
-
-AnyType::AnyType(unsigned int data)
-{
-    singleValue.unsignedType = data;
-    type = DataType::UNSIGNED;
-}
-
-AnyType::AnyType(const AnyType &other)
-{
-    this->type = other.type;
     this->singleValue = other.singleValue;
+    this->type = other.type;
 }
 
-AnyType& AnyType::operator=(const bool &data)
+AnyType::AnyType(AnyType &&other)
 {
-    this->singleValue.boolType = data;
-    this->type = DataType::BOOL;
+    this->singleValue = std::move(other.singleValue);
+    this->type = std::move(other.type);
+}
+
+AnyType& AnyType::operator= (AnyType& other)
+{
+    this->singleValue = other.singleValue;
+    this->type = other.type;
     return *this;
 }
 
-AnyType& AnyType::operator=(const char &data)
+AnyType& AnyType::operator= (AnyType&& other)
 {
-    this->singleValue.charType = data;
-    this->type = DataType::CHAR;
-    return *this;
-}
-
-AnyType& AnyType::operator=(const int &data)
-{
-    this->singleValue.intType = data;
-    this->type = DataType::INT;
-    return *this;
-}
-
-AnyType& AnyType::operator=(const float &data)
-{
-    this->singleValue.floatType = data;
-    this->type = DataType::FLOAT;
-    return *this;
-}
-
-AnyType& AnyType::operator=(const double &data)
-{
-    this->singleValue.doubleType = data;
-    this->type = DataType::DOUBLE;
-    return *this;
-}
-
-AnyType& AnyType::operator=(const unsigned &data)
-{
-    this->singleValue.unsignedType = data;
-    this->type = DataType::UNSIGNED;
+    this->singleValue = std::move(other.singleValue);
+    this->type = std::move(other.type);
     return *this;
 }
 
 bool AnyType::ToBool()
 {
-    if(this->type != DataType::BOOL)
-    {
-        throw Exception((char*)"bool");
-    }
+    CheckType(BOOL);
     return singleValue.boolType;
 }
 
 char AnyType::ToChar()
 {
-    if(this->type != DataType::CHAR)
-    {
-        throw Exception((char*)"char");
-    }
+    CheckType(CHAR);
     return singleValue.charType;
 }
 
 int AnyType::ToInt()
 {
-    if(this->type != DataType::INT)
-    {
-        throw Exception((char*)"int");
-    }
+    CheckType(INT);
     return singleValue.intType;
 }
 
 unsigned AnyType::ToUnsigned()
 {
-    if(this->type != DataType::UNSIGNED)
-    {
-        throw Exception((char*)"unsigned");
-    }
+    CheckType(UNSIGNED);
     return singleValue.unsignedType;
 }
 
 float AnyType::ToFloat()
 {
-    if(this->type != DataType::FLOAT)
-    {
-        throw Exception((char*)"float");
-    }
+    CheckType(FLOAT);
     return singleValue.floatType;
 }
 
 double AnyType::ToDouble()
 {
-    if(this->type != DataType::DOUBLE)
-    {
-        throw Exception((char*)"double");
-    }
+    CheckType(DOUBLE);
     return singleValue.doubleType;
+}
+
+void AnyType::CheckType(const DataType dataType)
+{
+    if(this->type != dataType)
+    {
+        throw (Exception(Types[this->type],Types[dataType]));
+    }
 }
 
 std::string AnyType::GetType()
 {
-    switch(type)
-    {
-        case DataType::BOOL:
-            return typeid(singleValue.boolType).name();
-        case DataType::CHAR:
-            return typeid(singleValue.charType).name();
-        case DataType::INT:
-            return typeid(singleValue.intType).name();
-        case DataType::UNSIGNED:
-            return typeid(singleValue.unsignedType).name();
-        case DataType::FLOAT:
-            return typeid(singleValue.floatType).name();
-        case DataType::DOUBLE:
-            return typeid(singleValue.doubleType).name();
-        default:
-            return "none";
-    }
+    return Types[this->type];
 }
 
 void AnyType::DestroyObject()
 {
-    this->type = DataType::NONE;
+    this->type = NONE;
 }
 
 void AnyType::Swap(AnyType& data)
 {
-    if(this->type != data.type)
-    {
-        throw "Can't swap elements due to different types";
-    }
     AnyType tmp = *this;
     *this = data;
     data = tmp;

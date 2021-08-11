@@ -1,41 +1,41 @@
 #ifndef ANYTYPE_ANYTYPE_H
 #define ANYTYPE_ANYTYPE_H
 #include <iostream>
-#include <memory>
+#define SIZE 7
+static std::string Types[SIZE] = { "none", "bool", "char", "int", "unsigned", "float", "double"};
+
+enum DataType
+{
+    NONE,
+    BOOL,
+    CHAR,
+    INT,
+    UNSIGNED,
+    FLOAT,
+    DOUBLE
+};
+
+union SingleValue
+{
+    bool boolType;
+    char charType;
+    int intType;
+    unsigned unsignedType;
+    float floatType;
+    double doubleType;
+};
 
 class AnyType
 {
 private:
-    union
-    {
-        bool boolType;
-        char charType;
-        int intType;
-        unsigned unsignedType;
-        float floatType;
-        double doubleType;
-    }singleValue;
-
-    enum class DataType
-    {
-        NONE,
-        BOOL,
-        CHAR,
-        INT,
-        UNSIGNED,
-        FLOAT,
-        DOUBLE
-    }type;
+    SingleValue singleValue;
+    int type;
 
 public:
     AnyType();
-    AnyType(bool data);
-    AnyType(char data);
-    AnyType(int data);
-    AnyType(unsigned data);
-    AnyType(float data);
-    AnyType(double data);
-    AnyType(const AnyType &other);
+    AnyType(AnyType &other);
+    AnyType(AnyType &&other);
+    template<typename T> AnyType(const T& data);
 
     bool ToBool();
     char ToChar();
@@ -44,16 +44,76 @@ public:
     float ToFloat();
     double ToDouble();
 
-    AnyType& operator= (const bool &data);
-    AnyType& operator= (const char &data);
-    AnyType& operator= (const int &data);
-    AnyType& operator= (const unsigned &data);
-    AnyType& operator= (const float &data);
-    AnyType& operator= (const double &data);
+    template<typename T> AnyType& operator=(const T &data);
+    AnyType& operator= (AnyType& other);
+    AnyType& operator= (AnyType&& other);
 
-    void DestroyObject();
-    void Swap(AnyType& data);
+    template <typename T> bool IsAvailableType(const T &data);
+    void CheckType(const DataType dataType);
     std::string GetType();
+    void Swap(AnyType& data);
+    void DestroyObject();
 };
+
+template<typename T>
+AnyType::AnyType(const T& data)
+{
+    this->operator=(data);
+}
+
+template<typename T>
+bool AnyType::IsAvailableType(const T &data)
+{
+    std::string typeName = typeid(data).name();
+    for(int i = 0; i < SIZE; ++i)
+    {
+        if(typeName == Types[i])
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+template<typename T>
+AnyType& AnyType::operator=(const T &data)
+{
+    if(!IsAvailableType(data))
+    {
+        throw "Can't assign invalid type \n";
+    }
+    std::string typeName = typeid(data).name();
+    if(typeName == typeid(bool).name())
+    {
+        this->singleValue.boolType = data;
+        this->type = BOOL;
+    }
+    else if(typeName == typeid(char).name())
+    {
+        this->singleValue.charType = (char) data;
+        this->type = CHAR;
+    }
+    else if(typeName == typeid(int).name())
+    {
+        this->singleValue.intType = data;
+        this->type = INT;
+    }
+    else if(typeName == typeid(unsigned).name())
+    {
+        this->singleValue.unsignedType = data;
+        this->type = UNSIGNED;
+    }
+    else if(typeName == typeid(float).name())
+    {
+        this->singleValue.floatType = data;
+        this->type = FLOAT;
+    }
+    else if(typeName == typeid(double).name())
+    {
+        this->singleValue.doubleType = data;
+        this->type = DOUBLE;
+    }
+    return *this;
+}
 
 #endif //ANYTYPE_ANYTYPE_H
