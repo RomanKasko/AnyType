@@ -1,8 +1,18 @@
 #ifndef ANYTYPE_ANYTYPE_H
 #define ANYTYPE_ANYTYPE_H
 #include <iostream>
-#define SIZE 7
-static std::string Types[SIZE] = { "none", "bool", "char", "int", "unsigned", "float", "double"};
+#include <map>
+
+static std::map<int,std::string> Types =
+        {
+                {0,"none"},
+                {1,"bool"},
+                {2,"char"},
+                {3,"int"},
+                {4,"unsigned"},
+                {5,"float"},
+                {6,"double"}
+        };
 
 enum DataType
 {
@@ -62,20 +72,6 @@ AnyType::AnyType(const T& data)
 }
 
 template<typename T>
-bool AnyType::IsAvailableType(const T &data)
-{
-    std::string typeName = typeid(data).name();
-    for(int i = 0; i < SIZE; ++i)
-    {
-        if(typeName == Types[i])
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-template<typename T>
 AnyType& AnyType::operator=(const T &data)
 {
     if(!IsAvailableType(data))
@@ -116,4 +112,17 @@ AnyType& AnyType::operator=(const T &data)
     return *this;
 }
 
+template<typename T>
+bool AnyType::IsAvailableType(const T &data)
+{
+    std::string typeName = typeid(data).name();
+    for(int i = 0; i < Types.size(); ++i)
+    {
+        if(typeName == Types[i])
+        {
+            return true;
+        }
+    }
+    return false;
+}
 #endif //ANYTYPE_ANYTYPE_H
