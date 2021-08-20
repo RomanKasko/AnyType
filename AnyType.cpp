@@ -76,7 +76,7 @@ void AnyType::CheckType(const DataType dataType)
     }
 }
 
-std::string AnyType::GetType()
+const std::string AnyType::GetType() noexcept
 {
     return Types[this->type];
 }

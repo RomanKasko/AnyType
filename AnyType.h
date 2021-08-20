@@ -3,7 +3,7 @@
 #include <iostream>
 #include <map>
 
-static std::map<int,std::string> Types =
+ static std::map<int,std::string> Types =
         {
                 {0,"none"},
                 {1,"bool"},
@@ -60,7 +60,7 @@ public:
 
     template <typename T> bool IsAvailableType(const T &data);
     void CheckType(const DataType dataType);
-    std::string GetType();
+    const std::string GetType() noexcept;
     void Swap(AnyType& data);
     void DestroyObject();
 };

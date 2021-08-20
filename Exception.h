@@ -7,9 +7,7 @@ class Exception
 private:
     std::string msg = "Failed! Non-type-safe cast from ";
 public:
-    explicit Exception() =default;
-    explicit Exception(char* errorTypeMsg);
-    explicit Exception(std::string &firstType, std::string &secondType);
-    const char* what() const noexcept;
+    Exception(const std::string &firstType,const std::string &secondType);
+    const char* what() const;
 };
 #endif //ANYTYPE_EXCEPTION_H
